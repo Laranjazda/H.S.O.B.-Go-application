@@ -7,31 +7,11 @@ import (
 	"text/template"
 	"time"
 
+	"web-service-application/mongodb"
+
 	_ "github.com/lib/pq"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
-
-// func connectDB(collection string) mongo.Collection {
-// 	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://laranjazda:bros2011@h-s-o-b.5b97q.mongodb.net/HSOB?retryWrites=true&w=majority"))
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-// 	err = client.Connect(ctx)
-// 	if err != nil {
-// 		log.Fatal(err)
-// 	}
-
-// 	defer client.Disconnect(ctx)
-
-// 	// create database and collections
-// 	hsobDB := client.Database("HSOB")
-
-// 	return *hsobDB.Collection(collection)
-// }
 
 type Product struct {
 	Id          int
@@ -49,19 +29,9 @@ func main() {
 }
 
 func index(w http.ResponseWriter, r *http.Request) {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://laranjazda:bros2011@h-s-o-b.5b97q.mongodb.net/HSOB?retryWrites=true&w=majority"))
-	if err != nil {
-		log.Fatal(err)
-	}
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	err = client.Connect(ctx)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer client.Disconnect(ctx)
-	// create database and collections
-	hsobDB := client.Database("HSOB")
-	productsDao := hsobDB.Collection("produtos")
+	hsobDao := mongodb.HsobDao{}
+	productsDao := hsobDao.Collection("produtos")
 
 	getTableProducts, err := productsDao.Find(ctx, bson.M{})
 	if err != nil {

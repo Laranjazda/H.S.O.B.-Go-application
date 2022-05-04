@@ -9,11 +9,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type Collection struct {
-	Collection string
+type HsobDao struct {
+	hsobdao mongo.Collection
 }
 
-func (Coll *Collection) hsobdb(collection string) mongo.Collection {
+func (connect *HsobDao) Collection(collection string) *mongo.Collection {
 	dbClient, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://laranjazda:bros2011@h-s-o-b.5b97q.mongodb.net/HSOB?retryWrites=true&w=majority"))
 	if err != nil {
 		log.Fatal(err)
@@ -24,8 +24,6 @@ func (Coll *Collection) hsobdb(collection string) mongo.Collection {
 	if err != nil {
 		log.Fatal(err)
 	}
-	hsobdb := dbClient.Database("HSOB")
 
-	return *hsobdb.Collection(collection)
-
+	return dbClient.Database("HSOB").Collection(collection)
 }
