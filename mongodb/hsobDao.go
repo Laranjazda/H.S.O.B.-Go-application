@@ -10,7 +10,6 @@ import (
 )
 
 type HsobDao struct {
-	hsobdao mongo.Collection
 }
 
 func (connect *HsobDao) Collection(collection string) *mongo.Collection {

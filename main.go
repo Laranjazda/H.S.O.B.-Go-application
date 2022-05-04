@@ -2,23 +2,12 @@ package main
 
 import (
 	"net/http"
-	"text/template"
-
-	"web-service-application/model"
+	"web-service-application/routes"
 
 	_ "github.com/lib/pq"
 )
 
-var temp = template.Must(template.ParseGlob("templates/*.html"))
-
 func main() {
-	http.HandleFunc("/", index)
+	routes.Init()
 	http.ListenAndServe(":8000", nil)
-}
-
-func index(w http.ResponseWriter, r *http.Request) {
-	products := model.GetAllProduct()
-
-	temp.ExecuteTemplate(w, "Index", products)
-	// fmt.Println(products)
 }

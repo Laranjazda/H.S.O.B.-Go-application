@@ -22,7 +22,7 @@ func GetAllProduct() []Product {
 	hsobDao := mongodb.HsobDao{}
 	productsDao := hsobDao.Collection("produtos")
 
-	getTableProducts, err := productsDao.Find(ctx, bson.M{})
+	getProducts, err := productsDao.Find(ctx, bson.M{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -30,10 +30,10 @@ func GetAllProduct() []Product {
 	p := Product{}
 	products := []Product{}
 
-	for getTableProducts.Next(ctx) {
+	for getProducts.Next(ctx) {
 		var product bson.M
 
-		if err = getTableProducts.Decode(&product); err != nil {
+		if err = getProducts.Decode(&product); err != nil {
 			log.Fatal(err)
 		}
 		p.Name = product["name"].(string)
@@ -43,6 +43,6 @@ func GetAllProduct() []Product {
 
 		products = append(products, p)
 	}
-	defer getTableProducts.Close(ctx)
+	defer getProducts.Close(ctx)
 	return products
 }
