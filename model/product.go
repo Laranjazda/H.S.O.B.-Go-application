@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
 	"web-service-application/mongodb"
@@ -17,6 +18,26 @@ type Product struct {
 	Quantities  int32
 }
 
+func SaveNewProduct(name, description string, price float64, quantities int32) {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	hsobDao := mongodb.HsobDao{}
+	productsDao := hsobDao.Collection("produtos")
+
+	answer, err := productsDao.InsertOne(ctx,
+		bson.D{
+			{Key: "name", Value: &name},
+			{Key: "description", Value: &description},
+			{Key: "price", Value: &price},
+			{Key: "quantities", Value: &quantities},
+		},
+	)
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(answer.InsertedID)
+
+}
 func GetAllProduct() []Product {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	hsobDao := mongodb.HsobDao{}
