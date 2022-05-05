@@ -36,7 +36,8 @@
                             <td>{{.Description}}</td>
                             <td>{{.Price}}</td>
                             <td>{{.Quantities}}</td>
-                            <td><a href="/delete?name={{.Name}}" class="btn btn-danger">Deletar</a></td>
+                            <td><a href="/update?name={{.Name}}" class="btn btn-info">Atualizar</a></td>
+                            <td><button onclick="onDelete('{{.Name}}')" class="btn btn-danger">Deletar</button></td>
                         </tr>
                         {{end}}
                     </tbody>
@@ -51,6 +52,15 @@
 
     </div>
 </body>
+
+<script>
+    function onDelete(name){
+        let answer = confirm("Are you sure you want to delete?")
+        if(answer){
+            window.location = "/delete?name=" + name
+        }
+    }
+</script>
 
 </html>
 {{end}}
