@@ -22,7 +22,6 @@ func SaveNewProduct(name, description string, price float64, quantities int32) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	hsobDao := mongodb.HsobDao{}
 	productsDao := hsobDao.Collection("produtos")
-
 	answer, err := productsDao.InsertOne(ctx,
 		bson.D{
 			{Key: "name", Value: &name},
