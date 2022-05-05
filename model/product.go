@@ -8,10 +8,11 @@ import (
 	"web-service-application/mongodb"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Product struct {
-	Id          int
+	Id          primitive.ObjectID
 	Name        string
 	Description string
 	Price       float64
@@ -65,4 +66,21 @@ func GetAllProduct() []Product {
 	}
 	defer getProducts.Close(ctx)
 	return products
+}
+
+func DeleteProduct(name string) {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	hsobDao := mongodb.HsobDao{}
+	productsDao := hsobDao.Collection("produtos")
+
+	answer, err := productsDao.DeleteOne(ctx, bson.M{"name": &name})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if err != nil {
+		panic(err.Error())
+	}
+
+	fmt.Println(answer.DeletedCount)
+
 }

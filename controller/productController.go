@@ -25,13 +25,11 @@ func SaveProduct(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		name := r.FormValue("name")
 		description := r.FormValue("description")
-		var k string = r.FormValue("price")
-		var h string = r.FormValue("quantities")
-		price, err := strconv.ParseFloat(k, 64)
+		price, err := strconv.ParseFloat(r.FormValue("price"), 64)
 		if err != nil {
 			log.Println("price cannot be converted", err)
 		}
-		quantities, err := strconv.ParseInt(h, 10, 32)
+		quantities, err := strconv.ParseInt(r.FormValue("quantities"), 10, 32)
 		if err != nil {
 			log.Println("quantities cannot be converted", err)
 		}
@@ -41,4 +39,10 @@ func SaveProduct(w http.ResponseWriter, r *http.Request) {
 
 	http.Redirect(w, r, "/", 301)
 
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("name")
+	model.DeleteProduct(id)
+	http.Redirect(w, r, "/", 301)
 }
