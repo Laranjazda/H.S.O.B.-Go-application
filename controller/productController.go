@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"text/template"
 	"web-service-application/model"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 var temp = template.Must(template.ParseGlob("templates/*.html"))
@@ -62,12 +64,17 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println("Price cannot be converted", err)
 		}
-		quantities, err := strconv.ParseInt(r.FormValue("quantities"), 10, 32)
+		quantities, err := strconv.Atoi(r.FormValue("quantities"))
 		if err != nil {
 			log.Println("Quantities cannot be converted", err)
 		}
 
-		model.Update(id, name, description, price, int32(quantities))
+		objId, err := primitive.ObjectIDFromHex(id)
+		if err != nil {
+			log.Panic(err.Error())
+		}
+
+		model.Update(objId, name, description, price, int32(quantities))
 	}
 	http.Redirect(w, r, "/", 301)
 }

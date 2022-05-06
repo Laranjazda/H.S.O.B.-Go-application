@@ -11,5 +11,5 @@ func Init() {
 	http.HandleFunc("/insert", controller.SaveProduct)
 	http.HandleFunc("/delete", controller.Delete)
 	http.HandleFunc("/edit", controller.Edit)
-	http.HandleFunc("/updateProduct", controller.UpdateProduct)
+	http.HandleFunc("/update", controller.UpdateProduct)
 }

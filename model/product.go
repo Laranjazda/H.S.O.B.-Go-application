@@ -128,29 +128,16 @@ func EditProduct(id string) Product {
 	return product
 }
 
-func Update(id, name, description string, price float64, quantity int32) {
+func Update(id primitive.ObjectID, name, description string, price float64, quantity int32) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	hsobDao := mongodb.HsobDao{}
 	productsDao := hsobDao.Collection("produtos")
 
-	/*CONVERT STRING TO OBJECTID*/
-	objId, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		log.Panic(err.Error())
-	}
+	// Declare an _id filter to get a specific MongoDB document
+	filter := bson.M{"_id": bson.M{"$eq": &id}}
+	update := bson.M{"$set": bson.M{"name": &name, "description": &description, "price": &price, "quantities": &quantity}}
 
-	answer, err := productsDao.UpdateOne(
-		ctx,
-		bson.M{"_id": objId},
-		bson.D{
-			{"$set", bson.D{
-				{"name", name},
-				{"description", description},
-				{"price", price},
-				{"quantities", quantity},
-			}},
-		},
-	)
+	answer, err := productsDao.UpdateOne(ctx, filter, update)
 	if err != nil {
 		log.Fatal(err)
 	}
