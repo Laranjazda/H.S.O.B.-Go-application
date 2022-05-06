@@ -29,11 +29,11 @@ func SaveProduct(w http.ResponseWriter, r *http.Request) {
 		description := r.FormValue("description")
 		price, err := strconv.ParseFloat(r.FormValue("price"), 64)
 		if err != nil {
-			log.Println("price cannot be converted", err)
+			log.Println("Error converting price:", err)
 		}
-		quantities, err := strconv.ParseInt(r.FormValue("quantities"), 10, 32)
+		quantities, err := strconv.Atoi(r.FormValue("quantities"))
 		if err != nil {
-			log.Println("quantities cannot be converted", err)
+			log.Println("Error converting quantities:", err)
 		}
 
 		model.SaveNewProduct(name, description, price, int32(quantities))
@@ -62,13 +62,14 @@ func UpdateProduct(w http.ResponseWriter, r *http.Request) {
 		description := r.FormValue("description")
 		price, err := strconv.ParseFloat(r.FormValue("price"), 64)
 		if err != nil {
-			log.Println("Price cannot be converted", err)
+			log.Println("Error converting price:", err)
 		}
 		quantities, err := strconv.Atoi(r.FormValue("quantities"))
 		if err != nil {
-			log.Println("Quantities cannot be converted", err)
+			log.Println("Error converting quantities:", err)
 		}
 
+		/*CONVERT STRING TO OBJECTID*/
 		objId, err := primitive.ObjectIDFromHex(id)
 		if err != nil {
 			log.Panic(err.Error())

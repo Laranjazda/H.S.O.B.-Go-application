@@ -12,7 +12,7 @@ import (
 )
 
 type Product struct {
-	Id          primitive.ObjectID `bson:"_id" json:"id, omitempty"`
+	Id          primitive.ObjectID `bson:"_id" json:"id"`
 	Idstr       string
 	Name        string  `json:"name"`
 	Description string  `json:"description"`
@@ -20,23 +20,20 @@ type Product struct {
 	Quantities  int32   `json:"quantities"`
 }
 
-func SaveNewProduct(name, description string, price float64, quantities int32) {
+func SaveNewProduct(name, description string, price float64, quantity int32) {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 	hsobDao := mongodb.HsobDao{}
 	productsDao := hsobDao.Collection("produtos")
-	answer, err := productsDao.InsertOne(ctx,
-		bson.D{
-			{Key: "name", Value: &name},
-			{Key: "description", Value: &description},
-			{Key: "price", Value: &price},
-			{Key: "quantities", Value: &quantities},
-		},
-	)
+
+	// Query with the object to be updated
+	query := bson.M{"name": &name, "description": &description, "price": &price, "quantities": &quantity}
+
+	answer, err := productsDao.InsertOne(ctx, query)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fmt.Println(answer.InsertedID)
+	fmt.Println("Novo produto salvo.", answer.InsertedID)
 
 }
 func GetAllProduct() []Product {
@@ -58,6 +55,7 @@ func GetAllProduct() []Product {
 		if err = getProducts.Decode(&product); err != nil {
 			log.Fatal(err)
 		}
+
 		/*CONVERT OBJECID TO STRING*/
 		p.Id = product["_id"].(primitive.ObjectID)
 		p.Idstr = p.Id.Hex()
@@ -83,12 +81,14 @@ func DeleteProduct(id string) {
 		log.Panic(err.Error())
 	}
 
-	answer, err := productsDao.DeleteOne(ctx, bson.M{"_id": objId})
+	// Filter to get a specific MongoDB document per id
+	filter := bson.M{"_id": bson.M{"$eq": objId}}
+	answer, err := productsDao.DeleteOne(ctx, filter)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(answer.DeletedCount)
+	fmt.Println(answer.DeletedCount, "produto deletado.", objId)
 }
 
 func EditProduct(id string) Product {
@@ -102,7 +102,9 @@ func EditProduct(id string) Product {
 		log.Panic(err.Error())
 	}
 
-	answer, err := productsDao.Find(ctx, bson.M{"_id": objId})
+	// Filter to get a specific MongoDB document per id
+	filter := bson.M{"_id": bson.M{"$eq": objId}}
+	answer, err := productsDao.Find(ctx, filter)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -115,6 +117,7 @@ func EditProduct(id string) Product {
 		if err = answer.Decode(&p); err != nil {
 			log.Fatal(err)
 		}
+
 		/*CONVERT OBJECID TO STRING*/
 		product.Id = p["_id"].(primitive.ObjectID)
 		product.Idstr = product.Id.Hex()
@@ -133,15 +136,15 @@ func Update(id primitive.ObjectID, name, description string, price float64, quan
 	hsobDao := mongodb.HsobDao{}
 	productsDao := hsobDao.Collection("produtos")
 
-	// Declare an _id filter to get a specific MongoDB document
+	// Filter to get a specific MongoDB document per id
 	filter := bson.M{"_id": bson.M{"$eq": &id}}
-	update := bson.M{"$set": bson.M{"name": &name, "description": &description, "price": &price, "quantities": &quantity}}
+	// Query with the object to be updated
+	query := bson.M{"$set": bson.M{"name": &name, "description": &description, "price": &price, "quantities": &quantity}}
 
-	answer, err := productsDao.UpdateOne(ctx, filter, update)
+	answer, err := productsDao.UpdateOne(ctx, filter, query)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(answer.ModifiedCount)
-
+	fmt.Println(answer.ModifiedCount, "produto atualizado.", &id)
 }
