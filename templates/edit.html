@@ -1,4 +1,4 @@
-{{define "Update"}}
+{{define "Edit"}}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -24,7 +24,7 @@
             </div>
         </div>
         <form method="POST" action="update">
-            <input type="hidden" name="id" value={{.Id}}>
+            <input type="hidden" name="id" value={{.Idstr}}>
             <div class="row">
                 <div class="col-sm-8">
                     <div class="form-group">
