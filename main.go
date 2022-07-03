@@ -5,8 +5,6 @@ import (
 	"web-service-application/routes"
 
 	_ "github.com/lib/pq"
-
-	_ "github.com/heroku/x/hmetrics/onload"
 )
 
 func main() {
